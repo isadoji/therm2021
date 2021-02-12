@@ -6,13 +6,13 @@ TH1F *eH = new TH1F("e","",200,0,20);
 TH1F *etaH = new TH1F("eta","",200,-10,10);
   gROOT->Reset();
   TChain mychain("T");
-  mychain.Add("dataUrQMD/prueba.root"); //archivo a leer 500*20
+  mychain.Add("dataUrQMD/7.root"); //10 000
   Int_t nev=10000;
   Int_t nlines = 0;
   struct particula_t
   {
     Float_t time,X,Y,Z,E,Px,Py,Pz,Pt,P,Eta,m,id,isoespin,charge,lastcoll,numbercoll,history,frezetime,frezeX,frezeY,frezeZ,frezeE,frezePx;
-    Float_t frezePy,frezePz,frezePt,frezeP,frezeEta;
+    Float_t frezePy,frezePz,frezePt,frezeP,frezeEta,b,bmin,bmax,sigma;
   } PARTICLE;
 
   particula_t  particle;
@@ -21,6 +21,8 @@ TH1F *etaH = new TH1F("eta","",200,-10,10);
     for (Int_t i=0;i<nevent;i++)
       {
 	mychain.GetEvent(i);
+  if(particle.b>5 )continue;//central
+  cout << particle.b << endl;
   if(particle.numbercoll==0)continue;//protones participantes
 
 	//cout << "pid=" << particle.id << " charge=" << particle.charge << " mass=" << particle.m << endl;
@@ -44,7 +46,7 @@ TH1F *etaH = new TH1F("eta","",200,-10,10);
 
 }
 TCanvas* c1 = new TCanvas("c1","Therminator test basic example",800,800);
-gStyle->SetOptStat(false);
+//gStyle->SetOptStat(false);
 c1->SetRightMargin(0.05);
 c1->SetTopMargin(0.1);
 c1->SetFillColor(0);
@@ -119,7 +121,7 @@ etaH->GetYaxis()->SetTitleSize(0.04);
 etaH->GetYaxis()->SetLabelSize(0.03);
 etaH->GetYaxis()->SetTitleOffset(1.2);
 etaH->GetYaxis()->SetRangeUser(0.0,1600);
-c1->SaveAs("plots/pimaryUrQMD.eps");
-c1->SaveAs("plots/pimaryUrQMD.pdf");
+//c1->SaveAs("plots/pimaryUrQMD.eps");
+//c1->SaveAs("plots/pimaryUrQMD.pdf");
 
 }
