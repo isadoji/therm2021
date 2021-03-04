@@ -4,7 +4,7 @@ double func( double x){
 double sigma = 0.6;
 double cte0 = TMath::Power(sigma*TMath::Sqrt(2*TMath::Pi()),-1);
 double cte1= TMath::Power(-2*sigma*sigma,-1);
-return cte0*TMath::Exp(cte1*TMath::Power(x,1));
+return cte0*TMath::Exp(cte1*TMath::Power(x,2));
 }
   auto posxH = new TH1F("posxH","x",100,-10,10);
   auto posyH = new TH1F("posyH","y",100,-10,10);
@@ -37,24 +37,30 @@ struct particula_t
 particula_t particle;
 mychain.SetBranchAddress("part",&particle);
 Int_t nevent = mychain.GetEntries();
-float pose, posx, posy, posz,vx, vy, vz,smearingx,smearingy,smearingz,velsmearingx,velsmearingy,velsmearingz;
+float eta2,p2,pt2, pose, posx, posy, posz,vx, vy, vz,sm, smearingx,smearingy,smearingz,velsmearingx,velsmearingy,velsmearingz;
 for (Int_t i=0;i<nevent;i++)
 {
 //	cout << i << endl;
   	mychain.GetEvent(i);
+
 if(particle.fatherpid !=  particle.pid && particle.pid !=  particle.rootpid ) continue;
+p2 = TMath::Sqrt(TMath::Power(particle.px,2) + TMath::Power(particle.py,2)+ TMath::Power(particle.pz,2)); //particle.px + particle.py;
+pt2 = TMath::Sqrt(TMath::Power(particle.px,2) + TMath::Power(particle.py,2)); //particle.px + particle.py;
+eta2 = 0.5*TMath::Log((p2+particle.pz)/(p2-particle.pz));
+
 pose= particle.e;
 posx= particle.x;
 posy= particle.y;
 posz= particle.z;
-
 vx = posx/pose;
 vy = posy/pose;
 vz = posz/pose;
 
-smearingx = func(posx*posx+posy*posy);
-smearingy = func(posx*posx+posy*posy);
-smearingz = func(posz);
+sm = (posx*posx)+(posy*posy)+(posz*posz);
+
+smearingx = func(sm);
+smearingy = func(sm);
+smearingz = func(sm);
 
 velsmearingx = smearingx/pose;
 velsmearingy = smearingy/pose;
